@@ -16,7 +16,7 @@ env:
 
 jobs:
   docker:
-    name: containerization
+    name: containerizations
     permissions:
       packages: write
     runs-on: ubuntu-latest
