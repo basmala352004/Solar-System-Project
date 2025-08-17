@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: microservice
-          image: latest
+          image: 20150748/solar-system:latest
           ports:
             - containerPort: 3000
 
