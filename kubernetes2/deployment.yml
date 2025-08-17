@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: microservice
-          image: 0473e6193f70350865112ca5a9d97a6bf729bb3616fe1c34ddf60f0f6f0f08c5
+          image: latest
           ports:
             - containerPort: 3000
 
