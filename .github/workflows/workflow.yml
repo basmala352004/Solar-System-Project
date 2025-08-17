@@ -11,6 +11,8 @@ env:
   MONGO_URI: "mongodb+srv://supercluster.d83jj.mongodb.net/superData"
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+  DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+  DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 jobs:
   unit-test:
@@ -72,5 +74,129 @@ jobs:
           path: coverage
           retention-days: 5
 
+  docker:
+    name: containerizations
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
 
+      - name: docker login
+        uses: docker/login-action@v3.5.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - name: GHCR login
+        uses: docker/login-action@v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker file
+        uses: docker/build-push-action@v6
+        with:
+          push: 'false'
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
+
+      - name: Test Docker image
+        run: |
+          docker images
+          docker run --name solar-system-app -d \
+          -p 3000:3000 \
+          -e MONGO_URI=$MONGO_URI \
+          -e MONGO_USERNAME=$MONGO_USERNAME \
+          -e MONGO_PASSWORD=$MONGO_PASSWORD \
+          ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
+          export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
+          echo $IP
+          echo Testing Image URL using wget
+          wget -q -O - 127.0.0.1:3000/live | grep  live
+
+      - name: Build Docker file
+        uses: docker/build-push-action@v6
+        with:
+          push: 'true'
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
+            ghcr.io/${{ github.repository_owner }}/solar-system:latest
+
+  terraform:
+    name: terraform deployment
+    needs: docker
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: us-east-1
+
+      - name: HashiCorp - Set up terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: 'latest'#1.1.7
+
+      - name: terraform init
+        run: terraform init
+        working-directory: ./Terraform
+
+      - name: terraform plan
+        run: terraform plan
+        working-directory: ./Terraform
+
+      - name: terraform apply or destroy.sh
+        run: |
+          if [ "${{ github.event.inputs.destroy }}" - "yes" |; then
+          terraform destroy -auto-approve
+          else
+           terraform apply -auto-approve
+          fi
+        working-directory: ./Terraform
+
+      - name: terraform apply
+        run: terraform apply -auto-approve
+
+  deploy:
+    needs: terraform
+    name: deploy to eks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: us-east-1
+          #cluster: stage-eks-cluster
+
+      - name: update kubeconfig
+        run: |
+          aws eks --region us-east-2 update-kubeconfig --name stage-eks-cluster
+
+      - name: Trigger app deployment
+        uses: statsig-io/kubectl-via-eksctl@main
+        env:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: us-east-1
+          cluster: stage-eks-cluster
+
+      - name: deploy k8s deployments
+        run: |
+          kubectl apply -f deployment.yml
+          kubectl apply -f service.yml
+        working-directory: ./kubernetes2

@@ -14,6 +14,7 @@ env:
   DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+
 jobs:
   docker:
     name: containerizations
@@ -42,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: 'false'
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
 
       - name: Test Docker image
         run: |
@@ -52,7 +53,7 @@ jobs:
           -e MONGO_URI=$MONGO_URI \
           -e MONGO_USERNAME=$MONGO_USERNAME \
           -e MONGO_PASSWORD=$MONGO_PASSWORD \
-          ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+          ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
           export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
           echo $IP
           echo Testing Image URL using wget
@@ -63,6 +64,5 @@ jobs:
         with:
           push: 'true'
           tags: |
-           ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
-           ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}
-
+            ${{ vars.DOCKERHUB_USERNAME }}/solar-system:latest
+            ghcr.io/${{ github.repository_owner }}/solar-system:latest
