@@ -1,3 +1,10 @@
+backend "s3" {
+  bucket         = "stagebucket12"
+  key            = "stage-eks1/terraform.tfstate"
+  region         = "us-west-2"
+  dynamodb_table = "terraform-lock"
+}
+
 resource "aws_vpc" "main" {
   cidr_block            = var.vpc_cidr  # "10.0.0.0/16"
   enable_dns_hostnames  = true
