@@ -163,7 +163,7 @@ jobs:
        #   fi
       #  working-directory: ./terraform2
 
-      - name: terraform apply
+      - name: Terraform apply
         run: terraform apply -auto-approve
         working-directory: ./terraform2
 
