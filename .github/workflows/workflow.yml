@@ -134,12 +134,12 @@ jobs:
       - name: checkout
         uses: actions/checkout@v5
 
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v4.3.1
-#        with:
-#          aws-access-key-id: ${{ secrets.aws_access_key_id }}
-#          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
-#          aws-region: us-east-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: us-east-1
 
       - name: HashiCorp - Set up terraform
         uses: hashicorp/setup-terraform@v3.1.2
@@ -148,11 +148,11 @@ jobs:
 
       - name: terraform init
         run: terraform init
-        working-directory: ./Terraform
+        working-directory: C:\Users\noah\Desktop\Solar-System-Project\Terraform
 
       - name: terraform plan
         run: terraform plan
-        working-directory: ./Terraform
+        working-directory: C:\Users\noah\Desktop\Solar-System-Project\Terraform
 
       #- name: terraform apply or destroy.sh
        # run: |
@@ -161,11 +161,11 @@ jobs:
          # else
         #   terraform apply -auto-approve
        #   fi
-      #  working-directory: ./Terraform
+      #  working-directory: C:\Users\noah\Desktop\Solar-System-Project\Terraform
 
       - name: terraform apply
         run: terraform apply -auto-approve
-        working-directory: ./Terraform
+        working-directory: C:\Users\noah\Desktop\Solar-System-Project\Terraform
 
   deploy:
     needs: terraform
