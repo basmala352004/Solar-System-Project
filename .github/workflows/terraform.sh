@@ -29,12 +29,12 @@ jobs:
 
             - name: terraform init
               run: terrafrom init
-              working-directory: C:\Users\noah\Desktop\Solar-System-Project\terraform2
+              working-directory: .\terraform2
 
 
             - name: terraform plan
               run: terraform plan
-              working-directory: ./Terraform
+              working-directory: ./terraform2
 
             - name: terraform apply
               run: terraform apply -auto-approve
