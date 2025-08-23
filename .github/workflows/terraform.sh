@@ -1,4 +1,4 @@
-name: soalr system workflow
+name: solar system workflow
 
 on:
     workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
 
             - name: terraform init
               run: terrafrom init
-              working-directory: ./Terraform
+              working-directory: C:\Users\noah\Desktop\Solar-System-Project\terraform2
 
 
             - name: terraform plan
