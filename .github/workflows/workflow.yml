@@ -148,11 +148,11 @@ jobs:
 
       - name: terraform init
         run: terraform init
-        working-directory: .\terraform2
+        working-directory: ./terraform2
 
       - name: terraform plan
         run: terraform plan
-        working-directory: .\terraform2
+        working-directory: ./terraform2
 
       #- name: terraform apply or destroy.sh
        # run: |
@@ -161,11 +161,11 @@ jobs:
          # else
         #   terraform apply -auto-approve
        #   fi
-      #  working-directory: .\terraform2
+      #  working-directory: ./terraform2
 
       - name: terraform apply
         run: terraform apply -auto-approve
-        working-directory: .\terraform2
+        working-directory: ./terraform2
 
   deploy:
     needs: terraform

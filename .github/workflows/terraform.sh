@@ -29,7 +29,7 @@ jobs:
 
             - name: terraform init
               run: terrafrom init
-              working-directory: .\terraform2
+              working-directory: ./terraform2
 
 
             - name: terraform plan
