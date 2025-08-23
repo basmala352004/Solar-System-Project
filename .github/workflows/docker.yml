@@ -26,7 +26,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v5
 
-      - name: docker login
+      - name: docker loginn
         uses: docker/login-action@v3.5.0
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
