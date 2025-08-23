@@ -134,12 +134,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
 
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v4.3.1
-#        with:
-#          aws-access-key-id: ${{ secrets.aws_access_key_id }}
-#          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
-#          aws-region: us-east-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: us-east-1
 
       - name: HashiCorp - Set up terraform
         uses: hashicorp/setup-terraform@v3.1.2
