@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: microservice
-          image: 20150748/solar-system:latest
+          image: mernaislam2/solar-system:latest  #ab5073e7026ef4c41918482bc18a3dd4-1617292639.us-west-2.elb.amazonaws.com
           ports:
             - containerPort: 3000
