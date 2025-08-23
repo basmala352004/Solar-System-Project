@@ -144,7 +144,7 @@ jobs:
       - name: HashiCorp - Set up terraform
         uses: hashicorp/setup-terraform@v3.1.2
         with:
-          terraform_version: 'latest'#1.1.7
+          terraform_version: 'latest' #1.1.7
 
       - name: terraform init
         run: terraform init
@@ -201,3 +201,8 @@ jobs:
           kubectl apply -f deployment.yml
           kubectl apply -f service.yml
         working-directory: ./kubernetes2
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods  
+          kubectl get svc
